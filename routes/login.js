@@ -86,7 +86,8 @@ app.post('/google', async (req, resp) => {
                         ok: true,
                         usuario: usuarioDB,
                         id: usuarioDB.id,
-                        token: token
+                        token: token,
+                        menu: obtenerMenu(usuarioDB.role)
                     });
 
                 }
@@ -122,7 +123,8 @@ app.post('/google', async (req, resp) => {
                         ok: true,
                         usuario: usuarioDB,
                         id: usuarioDB.id,
-                        token: token
+                        token: token,
+                        menu: obtenerMenu(usuario.role)
                     });
 
                         
@@ -169,7 +171,7 @@ app.post('/', (req, resp) => {
 
         if (!bcrypt.compareSync(body.password, usuarioDB.password)) {
 
-            return resp.status(400).json({
+            return resp.status(401).json({
                 ok: false,
                 mensaje: 'Error en credenciales - password',
                 errors: {
@@ -190,13 +192,43 @@ app.post('/', (req, resp) => {
             ok: true,
             usuario: usuarioDB,
             id: usuarioDB.id,
-            token: token
+            token: token,
+            menu: obtenerMenu(usuarioDB.role)
         });
         
     });
 });
 
+function obtenerMenu( ROLE ){
 
+    var menu = [
+        {
+          titulo: 'Principal',
+          icono: 'mdi mdi-gauge',
+          submenu: [
+            { titulo: 'Dashboard', url: '/dashboard' },
+            { titulo: 'ProgressBar', url: '/progress' },
+            { titulo: 'Graficas', url: '/grafica1' },
+            { titulo: 'Promesas', url: '/promesas' },
+            { titulo: 'Rxjs', url: '/rxjs' }
+          ]
+        },
+        {
+          titulo: 'Mantenimientos',
+          icono: 'mdi mdi-folder-lock-open',
+          submenu: [
+            { titulo: 'Hospitales', url: '/hospitales'},
+            { titulo: 'Medicos', url: '/medicos'},
+          ]
+        }
+      ];
+
+      if (ROLE === 'ADMIN_ROLE') {
+          // unshift -> añade el elemento al principio
+          menu[1].submenu.unshift({ titulo: 'Usuarios', url: '/usuarios'});
+      }
+      return menu;
+}
 
 
 
